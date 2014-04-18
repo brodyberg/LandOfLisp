@@ -30,3 +30,27 @@
   (labels ((at-loc-p (object)
 		     (eq (cadr (assoc object object-locations)) location)))
     (remove-if-not #'at-loc-p objects)))
+
+(defun describe-objects (location objects object-locations)
+  (labels ((describe-object (object)
+			    `(you see a ,object on the floor.)))
+    (apply #'append (mapcar #'describe-object (objects-at location objects object-locations)))))
+
+(defun *location* 'living-room)
+
+(defun look ()
+  (append (describe-location *location* *nodes*)
+	  (describe-paths *location* *edges*)
+	  (describe-objects *location* *objects* *object-locations*)))
+
+(defun walk (direction)
+  (let ((next (find direction
+		    (cdr (assoc *location* *edges*))
+		    :key #'cadr)))
+    (if next
+      (progn (setf *location* (car next))
+	     (look))
+      '(you cannot go that way))))
+
+
+
