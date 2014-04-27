@@ -1,0 +1,56 @@
+(defparameter *max-label-length* 30)
+
+(defun dot-label (expression)
+  (if expression
+    (let ((s (write-to-string expression :pretty nil)))
+      (if (> (length s) *max-label-length*)
+	(concatenate 'string (subseq s 0 (- *max-label-length* 3)) "...")
+	s))
+    ""))
+
+(defun dot-name (expression)
+  (substitute-if #\_ (complement #'alphanumericp) (prin1-to-string expression)))
+
+(defparameter *label-start* "[label=\"")
+(defparameter *label-end* "\"];")
+
+(defun print-label (text)
+  (princ (concatenate 'string *label-start* text *label-end*)))
+  
+  ;(princ *label-start*)
+  ;(princ text)
+  ;(princ *label-end*))
+
+(defun nodes->dot (nodes)
+  (mapc (lambda (node)
+	  (fresh-line)
+	  (princ (dot-name (car node)))
+	  (print-label (dot-label node)))
+	  ; (princ "[label=\"")
+	  ;(princ *label-start*)
+	  ;(princ (dot-label node))
+	  ;(princ *label-end*))
+	  ;(princ "\"];"))
+	nodes))
+
+(defun edges->dot (edges)
+  (mapc (lambda (node)
+	  (mapc (lambda (edge)
+		  (fresh-line)
+		  (princ (dot-name (car node)))
+		  (princ "->")
+		  (princ (dot-name (car edge)))
+		  ;(princ *label-start*)
+		  ;(princ "[label=\"")
+		  (print-label (dot-label (cdr edge))))
+		  ;(princ *label-end*))
+		  ;(princ "\"];"))
+		(cdr node)))
+	edges))
+
+(defun graph->dot (nodes edges)
+  (princ "digraph{")
+  (nodes->dot nodes)
+  (edges->dot edges)
+  (princ "}"))
+
