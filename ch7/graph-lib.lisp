@@ -17,20 +17,11 @@
 (defun print-label (text)
   (princ (concatenate 'string *label-start* text *label-end*)))
   
-  ;(princ *label-start*)
-  ;(princ text)
-  ;(princ *label-end*))
-
 (defun nodes->dot (nodes)
   (mapc (lambda (node)
 	  (fresh-line)
 	  (princ (dot-name (car node)))
 	  (print-label (dot-label node)))
-	  ; (princ "[label=\"")
-	  ;(princ *label-start*)
-	  ;(princ (dot-label node))
-	  ;(princ *label-end*))
-	  ;(princ "\"];"))
 	nodes))
 
 (defun edges->dot (edges)
@@ -40,11 +31,7 @@
 		  (princ (dot-name (car node)))
 		  (princ "->")
 		  (princ (dot-name (car edge)))
-		  ;(princ *label-start*)
-		  ;(princ "[label=\"")
 		  (print-label (dot-label (cdr edge))))
-		  ;(princ *label-end*))
-		  ;(princ "\"];"))
 		(cdr node)))
 	edges))
 
@@ -53,4 +40,18 @@
   (nodes->dot nodes)
   (edges->dot edges)
   (princ "}"))
+
+(defun dot->png (fname thunk)
+  (with-open-file (*standard-output*
+		    fname
+		    :direction :output
+		    :if-exists :supersede)
+    (funcall thunk))
+  (ext:shell (concatenate 'string "dot -Tpng -O " fname)))
+
+(defun graph->png (fname nodes edges)
+  (dot->png fname
+	    (lambda ()
+	      (graph->dot nodes edges))))
+
 
