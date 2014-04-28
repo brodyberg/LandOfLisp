@@ -82,4 +82,4 @@
 	    (lambda ()
 	      (ugraph->dot nodes edges))))
 
-
+(ugraph->png "uwizard.dot" *nodes* *edges*)
