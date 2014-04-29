@@ -18,9 +18,23 @@
 (defun make-edge-list ()
   (apply #'append (loop repeat *edge-num*
 		       collect (edge-pair (random-node) (random-node)))))
+
+(defun print-list2 (lst)
+  (princ (car lst))
+  (if (eq lst ())
+    ()
+    (print-list2 (cdr lst))))
+
+(defun print-list3 (lst)
+  (unless (eq lst ())
+    (princ (car lst))
+    (print-list3 (cdr lst))))
+
 (defun print-list (lst)
   (loop for a in lst do (print a)))
 
+; Go through edge-list. Remove all edges whose terminus
+; is not node. 
 (defun direct-edges (node edge-list)
   (remove-if-not (lambda (x)
 		   (eql (car x) node))
